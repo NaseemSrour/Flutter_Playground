@@ -4,8 +4,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'parse_json.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MyListApp());
 
 class MyApp extends StatelessWidget {
   @override
@@ -132,16 +133,14 @@ class MyTabs extends StatelessWidget {
               tabs: categoryTabs,
             ),
             title: Text('My Shawarma')),
-        body: TabBarView(
-          children: categoryTabs.map((Tab tab) {
-            final String label = tab.text.toLowerCase();
-            return Center(
-              child: Text(
-                'This is the $label tab',
-                style: const TextStyle(fontSize: 36),
-              ),
-            );
-          }).toList(),
+        body: ListView(
+          children: <Widget>[
+            ListTile(leading: Icon(Icons.map), title: Text('7abash')),
+            ListTile(
+                leading: Icon(Icons.photo_album),
+                title: Text('baquette 3ejel')),
+            ListTile(leading: Icon(Icons.food_bank), title: Text('brocolli')),
+          ],
         ),
       ),
     );
