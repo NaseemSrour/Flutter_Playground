@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.blue,
       ),
-      home: RandomWords(),
+      home: MyTabs(),
     );
   }
 } // end of class MyApp
@@ -107,6 +107,42 @@ class _RandomWordsState extends State<RandomWords> {
             body: ListView(children: divided),
           );
         },
+      ),
+    );
+  }
+}
+
+class MyTabs extends StatelessWidget {
+  final List<Tab> categoryTabs = <Tab>[
+    Tab(text: 'FIRST'),
+    Tab(text: 'SECOND'),
+    Tab(text: 'THIRD'),
+    Tab(text: 'FOURTH'),
+    Tab(text: 'FIFTH'),
+    Tab(text: 'SIXTH')
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: categoryTabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+            bottom: TabBar(
+              tabs: categoryTabs,
+            ),
+            title: Text('My Shawarma')),
+        body: TabBarView(
+          children: categoryTabs.map((Tab tab) {
+            final String label = tab.text.toLowerCase();
+            return Center(
+              child: Text(
+                'This is the $label tab',
+                style: const TextStyle(fontSize: 36),
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
