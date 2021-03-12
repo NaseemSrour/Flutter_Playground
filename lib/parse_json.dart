@@ -5,46 +5,52 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-// This file demonstartes how to fetch a (huge) json file, and parsing it into Photo
+// This file demonstartes how to fetch a (huge) json file, and parsing it into Item
 // list and displaying it, using Isolate (another thread) in order not to lag
 // the app.
 // I'll use this to parse into ITEMs.
 
-Future<List<Photo>> fetchPhotos(http.Client client) async {
-  final response =
-      await client.get('https://jsonplaceholder.typicode.com/photos');
-
-  // Use the compute function to run parsePhotos in a separate isolate.
-  return compute(parsePhotos, response.body);
-}
-
-// A function that converts a response body into a List<Photo>.
-List<Photo> parsePhotos(String responseBody) {
-  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-
-  return parsed.map<Photo>((json) => Photo.fromJson(json)).toList();
-}
-
-class Photo {
-  final int albumId;
-  final int id;
-  final String title;
-  final String url;
+// The item I want to display class, in this case Item.
+class Item {
+  final int businessID;
+  final int price;
+  final String name;
+  final String desc;
   final String thumbnailUrl;
 
-  Photo({this.albumId, this.id, this.title, this.url, this.thumbnailUrl});
+  Item({this.businessID, this.price, this.name, this.desc, this.thumbnailUrl});
 
-  factory Photo.fromJson(Map<String, dynamic> json) {
-    return Photo(
-      albumId: json['albumId'] as int,
-      id: json['id'] as int,
-      title: json['title'] as String,
-      url: json['url'] as String,
-      thumbnailUrl: json['thumbnailUrl'] as String,
+  factory Item.fromJson(Map<String, dynamic> json) {
+    return Item(
+      businessID: json['userId'] as int,
+      price: json['id'] as int,
+      name: json['title'] as String,
+      /*
+      desc: json['desc'] as String,
+      thumbnailUrl: json['image'] as String,
+      */
     );
   }
+} // end of class Item
+
+// A function that converts a response body into a List<Item>.
+List<Item> parseItems(String responseBody) {
+  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+
+  return parsed.map<Item>((json) => Item.fromJson(json)).toList();
 }
 
+// HTTP GET request: Fetch items from internet (json)
+Future<List<Item>> fetchItems(http.Client client) async {
+  final response = await client.get(
+      'https://jsonplaceholder.typicode.com/albums'); // random json from the internet 3ben ma yser el json ta3e deployed online
+  // because localhost mzbtish. this returns Album{userId, id, title}.
+
+  // Use the compute function to run parseItems in a separate isolate (thread).
+  return compute(parseItems, response.body);
+}
+
+// Another app instead of the one in main.dart, that parses a json:
 class MyListApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -68,13 +74,13 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: FutureBuilder<List<Photo>>(
-        future: fetchPhotos(http.Client()),
+      body: FutureBuilder<List<Item>>(
+        future: fetchItems(http.Client()),
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
 
           return snapshot.hasData
-              ? PhotosList(photos: snapshot.data)
+              ? ItemsList(items: snapshot.data)
               : Center(child: CircularProgressIndicator());
         },
       ),
@@ -82,10 +88,11 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class PhotosList extends StatelessWidget {
-  final List<Photo> photos;
+// The actual list in the app:
+class ItemsList extends StatelessWidget {
+  final List<Item> items;
 
-  PhotosList({Key key, this.photos}) : super(key: key);
+  ItemsList({Key key, this.items}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -93,9 +100,11 @@ class PhotosList extends StatelessWidget {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
       ),
-      itemCount: photos.length,
+      itemCount: items.length,
       itemBuilder: (context, index) {
-        return Image.network(photos[index].thumbnailUrl);
+        return ListTile(
+            title: Text(items[index].name), // filling it
+            trailing: Icon(Icons.wifi));
       },
     );
   }
