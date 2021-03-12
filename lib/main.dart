@@ -4,9 +4,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
-import 'parse_json.dart';
+import 'build_menu.dart';
 
-void main() => runApp(MyListApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
