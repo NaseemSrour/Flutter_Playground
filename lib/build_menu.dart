@@ -17,16 +17,26 @@ class Item {
   final String name;
   final String desc;
   final String thumbnailUrl;
+  final String category;
 
-  Item({this.businessID, this.price, this.name, this.desc, this.thumbnailUrl});
+  Item(
+      {this.businessID,
+      this.price,
+      this.name,
+      this.desc,
+      this.thumbnailUrl,
+      this.category});
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
-      businessID: json['business_id'] as int,
-      price: json['price'] as int,
-      name: json['name'] as String,
+      businessID: json['userId'] as int,
+      price: json['id'] as int,
+      name: json['title'] as String,
+      /*
       desc: json['desc'] as String,
-      // thumbnailUrl: json['image'] as String,
+      thumbnailUrl: json['image'] as String,
+      category: json['category'] as String,
+      */
     );
   }
 } // end of class Item
@@ -40,26 +50,19 @@ List<Item> parseItems(String responseBody) {
 
 // HTTP GET request: Fetch items from internet (json)
 Future<List<Item>> fetchItems(http.Client client) async {
-  final response = await client
-      .get('https://mocki.io/v1/7df2ab0b-919b-4625-8df4-e76d4d22b886');
-
-  // 'https://jsonplaceholder.typicode.com/albums' // random json from the internet 3ben ma yser el json ta3e deployed online
+  final response = await client.get(
+      'https://jsonplaceholder.typicode.com/albums'); // random json from the internet 3ben ma yser el json ta3e deployed online
   // because localhost mzbtish. this returns Album{userId, id, title}.
 
   // Use the compute function to run parseItems in a separate isolate (thread).
-  String body = utf8.decode(
-      response.bodyBytes); // take response.bodyBytes instead of response.body
-  // because we have Arabic, and want to decode it to UTF-8.
-  // Maybe if the serevr responded with a Header charset=utf-8 maybe we wouldn't need this, and would only
-  // pass response.body here below:
-  return compute(parseItems, body);
+  return compute(parseItems, response.body);
 }
 
 // Another app instead of the one in main.dart, that parses a json:
-class MyListApp extends StatelessWidget {
+class MenuApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'Parsing Into Lists';
+    final appTitle = 'Menu Building Demo';
 
     return MaterialApp(
       title: appTitle,
@@ -82,7 +85,7 @@ class MyHomePage extends StatelessWidget {
       body: FutureBuilder<List<Item>>(
         future: fetchItems(http.Client()),
         builder: (context, snapshot) {
-          if (snapshot.hasError) print("Errrrrrror: " + snapshot.error);
+          if (snapshot.hasError) print(snapshot.error);
 
           return snapshot.hasData
               ? ItemsList(items: snapshot.data)
@@ -101,15 +104,50 @@ class ItemsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      scrollDirection: Axis.vertical,
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+      ),
       itemCount: items.length,
       itemBuilder: (context, index) {
         return ListTile(
-            leading: Text("zib"),
             title: Text(items[index].name), // filling it
-            trailing: Text("₪" + items[index].price.toString()));
+            trailing: Icon(Icons.wifi));
       },
+    );
+  }
+}
+
+class MenuTabs extends StatelessWidget {
+  final List<Tab> categoryTabs = <Tab>[
+    Tab(text: 'FIRST'),
+    Tab(text: 'SECOND'),
+    Tab(text: 'THIRD'),
+    Tab(text: 'FOURTH'),
+    Tab(text: 'FIFTH'),
+    Tab(text: 'SIXTH')
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: categoryTabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+            bottom: TabBar(
+              tabs: categoryTabs,
+            ),
+            title: Text('My Business Name')),
+        body: ListView(
+          children: <Widget>[
+            ListTile(leading: Icon(Icons.map), title: Text('7abash')),
+            ListTile(
+                leading: Icon(Icons.photo_album),
+                title: Text('baquette 3ejel')),
+            ListTile(leading: Icon(Icons.food_bank), title: Text('brocolli')),
+          ],
+        ),
+      ),
     );
   }
 }
