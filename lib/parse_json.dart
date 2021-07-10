@@ -22,9 +22,9 @@ class Item {
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
-      businessID: json['userId'] as int,
-      price: json['id'] as int,
-      name: json['title'] as String,
+      businessID: json['business_id'] as int,
+      price: json['price'] as int,
+      name: json['name'] as String,
       /*
       desc: json['desc'] as String,
       thumbnailUrl: json['image'] as String,
@@ -42,12 +42,19 @@ List<Item> parseItems(String responseBody) {
 
 // HTTP GET request: Fetch items from internet (json)
 Future<List<Item>> fetchItems(http.Client client) async {
-  final response = await client.get(
-      'https://jsonplaceholder.typicode.com/albums'); // random json from the internet 3ben ma yser el json ta3e deployed online
+  final response = await client
+      .get('https://mocki.io/v1/7df2ab0b-919b-4625-8df4-e76d4d22b886');
+
+  // 'https://jsonplaceholder.typicode.com/albums' // random json from the internet 3ben ma yser el json ta3e deployed online
   // because localhost mzbtish. this returns Album{userId, id, title}.
 
   // Use the compute function to run parseItems in a separate isolate (thread).
-  return compute(parseItems, response.body);
+  String body = utf8.decode(
+      response.bodyBytes); // take response.bodyBytes instead of response.body
+  // because we have Arabic, and want to decode it to UTF-8.
+  // Maybe if the serevr responded with a Header charset=utf-8 maybe we wouldn't need this, and would only
+  // pass response.body here below:
+  return compute(parseItems, body);
 }
 
 // Another app instead of the one in main.dart, that parses a json:
@@ -103,7 +110,7 @@ class ItemsList extends StatelessWidget {
         return ListTile(
             leading: Text("zib"),
             title: Text(items[index].name), // filling it
-            trailing: Text("₪40"));
+            trailing: Text("₪" + items[index].price.toString()));
       },
     );
   }
