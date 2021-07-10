@@ -25,10 +25,8 @@ class Item {
       businessID: json['business_id'] as int,
       price: json['price'] as int,
       name: json['name'] as String,
-      /*
       desc: json['desc'] as String,
-      thumbnailUrl: json['image'] as String,
-      */
+      // thumbnailUrl: json['image'] as String,
     );
   }
 } // end of class Item
