@@ -54,7 +54,7 @@ Future<List<Item>> fetchItems(http.Client client) async {
 class MyListApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'Isolate Demo';
+    final appTitle = 'Parsing Into Lists';
 
     return MaterialApp(
       title: appTitle,
@@ -77,7 +77,7 @@ class MyHomePage extends StatelessWidget {
       body: FutureBuilder<List<Item>>(
         future: fetchItems(http.Client()),
         builder: (context, snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
+          if (snapshot.hasError) print("Errrrrrror: " + snapshot.error);
 
           return snapshot.hasData
               ? ItemsList(items: snapshot.data)
@@ -96,15 +96,14 @@ class ItemsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-      ),
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
       itemCount: items.length,
       itemBuilder: (context, index) {
         return ListTile(
+            leading: Text("zib"),
             title: Text(items[index].name), // filling it
-            trailing: Icon(Icons.wifi));
+            trailing: Text("₪40"));
       },
     );
   }
