@@ -50,8 +50,8 @@ List<Item> parseItems(String responseBody) {
 
 // HTTP GET request: Fetch items from internet (json)
 Future<List<Item>> fetchItems(http.Client client) async {
-  final response = await client.get(
-      'https://jsonplaceholder.typicode.com/albums'); // random json from the internet 3ben ma yser el json ta3e deployed online
+  final response = await client.get(Uri.parse(
+      'https://jsonplaceholder.typicode.com/albums')); // random json from the internet 3ben ma yser el json ta3e deployed online
   // because localhost mzbtish. this returns Album{userId, id, title}.
 
   // Use the compute function to run parseItems in a separate isolate (thread).
