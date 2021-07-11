@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 
 // This file demonstartes how to fetch a (huge) json file, and parsing it into Item
@@ -26,7 +27,7 @@ class Item {
       price: json['price'] as int,
       name: json['name'] as String,
       desc: json['desc'] as String,
-      // thumbnailUrl: json['image'] as String,
+      thumbnailUrl: json['image_url'] as String,
     );
   }
 } // end of class Item
@@ -40,8 +41,8 @@ List<Item> parseItems(String responseBody) {
 
 // HTTP GET request: Fetch items from internet (json)
 Future<List<Item>> fetchItems(http.Client client) async {
-  final response = await client
-      .get('https://mocki.io/v1/7df2ab0b-919b-4625-8df4-e76d4d22b886');
+  final response = await client.get(
+      Uri.parse('https://mocki.io/v1/b7059238-ca17-4533-9875-cae9ccf33af1'));
 
   // 'https://jsonplaceholder.typicode.com/albums' // random json from the internet 3ben ma yser el json ta3e deployed online
   // because localhost mzbtish. this returns Album{userId, id, title}.
@@ -106,8 +107,12 @@ class ItemsList extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         return ListTile(
-            leading: Text("zib"),
+            leading: CachedNetworkImage(
+              placeholder: (context, url) => CircularProgressIndicator(),
+              imageUrl: items[index].thumbnailUrl,
+            ),
             title: Text(items[index].name), // filling it
+            subtitle: Text(items[index].desc),
             trailing: Text("₪" + items[index].price.toString()));
       },
     );
